@@ -65,9 +65,9 @@ end
 get '/' do
   # IP address validation
   return respond_401 unless request.env.key?('HTTP_X_FORWARDED_FOR')
+
   remote_ips = request.env['HTTP_X_FORWARDED_FOR'].split(',')
   return respond_401 unless remote_ips.length >= 2 && $authorized_ip_addresses.include?(remote_ips[-2].strip)
-
   return respond_401 unless request.env.key?('HTTP_AUTHORIZATION')
 
   authorization_header = request.env['HTTP_AUTHORIZATION']
@@ -81,7 +81,6 @@ get '/' do
   return respond_401 unless parsed_header.key? :username
   return respond_401 unless parsed_header.key? :response
   return respond_401 unless secure_compare(parsed_header[:username], $correct_username)
-
   return respond_401 unless $server_nonces_generated.include?(parsed_header[:nonce])
   return respond_401 if $server_nonces_used.include?(parsed_header[:nonce]) 
   return respond_401 if $client_nonces_used.include?(parsed_header[:cnonce]) 
