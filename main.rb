@@ -5,7 +5,10 @@ configure do
 end
 
 def respond_401()
-  [401, {'Content-Type'=>'application/json'}, '{"details":"Unable to authenticate"}']
+  headers = {
+    'Content-Type'=>'application/json',
+  }
+  [401, headers, '{"details":"Unable to authenticate"}']
 end
 
 authorized_ip_addresses = ENV['ACTIVITY_STREAM_IP_WHITELIST'].split(',')
