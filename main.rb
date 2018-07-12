@@ -5,5 +5,5 @@ configure do
 end
 
 get '/' do
-  [200, {}, "Hello World!"]
+  [200, {'Content-Type'=>'application/json'}, '{"content”:”for-pen-test"}']
 end
