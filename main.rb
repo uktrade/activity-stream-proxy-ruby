@@ -66,7 +66,7 @@ get '/' do
   # IP address validation
   return respond_401 unless request.env.key?('HTTP_X_FORWARDED_FOR')
   remote_ips = request.env['HTTP_X_FORWARDED_FOR'].split(',')
-  return response_401 unless remote_ips.length >= 2 && $authorized_ip_addresses.include?(remote_ips[-2])
+  return respond_401 unless remote_ips.length >= 2 && $authorized_ip_addresses.include?(remote_ips[-2].strip)
 
   return respond_401 unless request.env.key?('HTTP_AUTHORIZATION')
 
