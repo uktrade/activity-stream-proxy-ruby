@@ -5,5 +5,5 @@ configure do
 end
 
 get '/' do
-  "Hello World!"
+  [200, {}, "Hello World!"]
 end
