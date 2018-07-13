@@ -98,7 +98,7 @@ get '/' do
       "#{request.request_method}:#{request.fullpath}")
   hmac_secret_hash = Digest::SHA256.hexdigest(
       "#{settings.correct_username}:#{settings.correct_realm}:#{settings.correct_password}")
-  nonce_c = '00000001'  # We only allow cnonce to be used once
+  nonce_c = '00000001'  # We only allow nonce to be used once
   hmac_value = Digest::SHA256.hexdigest(
       "#{hmac_secret_hash}:#{parsed_header[:nonce]}:" +
       "#{nonce_c}:#{parsed_header[:cnonce]}:#{settings.correct_qop}:" +
