@@ -39,7 +39,7 @@ configure do
   set :server_nonces_used, ExpiringSet.new(used_nonce_expire)
   set :client_nonces_used, ExpiringSet.new(used_nonce_expire)
   set :correct_realm, 'activity-stream-proxy-ruby'
-  set :correct_qop, 'auth'
+  set :correct_qop, 'auth-int'
 end
 
 def secure_compare(a, b)
@@ -94,8 +94,9 @@ get '/' do
   return respond_401 unless secure_compare(parsed_header[:username], settings.correct_username)
 
   # Hash check
+  hmac_payload_hash = Digest::SHA256.hexdigest(request.body.read)
   hmac_data_hash = Digest::SHA256.hexdigest(
-      "#{request.request_method}:#{request.fullpath}")
+      "#{request.request_method}:#{request.fullpath}:#{hmac_payload_hash}")
   hmac_secret_hash = Digest::SHA256.hexdigest(
       "#{settings.correct_username}:#{settings.correct_realm}:#{settings.correct_password}")
   nonce_c = '00000001'  # We only allow nonce to be used once
