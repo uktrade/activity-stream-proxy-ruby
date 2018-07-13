@@ -83,8 +83,11 @@ get '/' do
   return respond_401 unless parsed_header.key? :username
   return respond_401 unless parsed_header.key? :response
   return respond_401 unless settings.server_nonces_generated.include?(parsed_header[:nonce])
-  return respond_401 if settings.server_nonces_used.include?(parsed_header[:nonce]) 
+  return respond_401 if settings.server_nonces_used.include?(parsed_header[:nonce])
   return respond_401 if settings.client_nonces_used.include?(parsed_header[:cnonce])
+
+  settings.server_nonces_used.add(parsed_header[:nonce])
+  settings.client_nonces_used.add(parsed_header[:cnonce])
 
   return respond_401 unless secure_compare(parsed_header[:username], settings.correct_username)
   hmac_data_hash = Digest::SHA256.hexdigest(
@@ -100,9 +103,6 @@ get '/' do
     )
 
   return respond_401 unless secure_compare(parsed_header[:response], hmac_value)
-
-  settings.server_nonces_used.add(parsed_header[:nonce])
-  settings.client_nonces_used.add(parsed_header[:cnonce])
 
   [200, {'Content-Type'=>'application/json'}, '{"content":"for-pen-test"}']
 end
