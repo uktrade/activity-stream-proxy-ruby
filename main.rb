@@ -35,9 +35,9 @@ configure do
   generated_nonce_expire = 15
   set :server_nonces_generated, ExpiringSet.new(generated_nonce_expire)
 
-  client_nonce_expire = 60
-  set :server_nonces_used, ExpiringSet.new(client_nonce_expire)
-  set :client_nonces_used, ExpiringSet.new(client_nonce_expire)
+  used_nonce_expire = 60
+  set :server_nonces_used, ExpiringSet.new(used_nonce_expire)
+  set :client_nonces_used, ExpiringSet.new(used_nonce_expire)
   set :correct_realm, 'activity-stream-proxy-ruby'
   set :correct_qop, 'auth'
 end
