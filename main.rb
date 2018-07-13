@@ -15,7 +15,7 @@ class ExpiringSet
     now = Time.now.to_i
     remove_old_keys(now)
     item_expires = now + @seconds
-    @expires[item] = item_expires
+    @expires[item] = item_expires unless @expires.key?(item)
   end
 
   def include?(item)
@@ -67,7 +67,6 @@ get '/' do
 
   # IP address validation
   return respond_401 unless request.env.key?('HTTP_X_FORWARDED_FOR')
-
   remote_ips = request.env['HTTP_X_FORWARDED_FOR'].split(',')
   return respond_401 unless remote_ips.length >= 2 && settings.authorized_ip_addresses.include?(remote_ips[-2].strip)
   return respond_401 unless request.env.key?('HTTP_AUTHORIZATION')
@@ -82,12 +81,14 @@ get '/' do
   return respond_401 unless parsed_header.key? :cnonce
   return respond_401 unless parsed_header.key? :username
   return respond_401 unless parsed_header.key? :response
-  return respond_401 unless settings.server_nonces_generated.include?(parsed_header[:nonce])
-  return respond_401 if settings.server_nonces_used.include?(parsed_header[:nonce])
-  return respond_401 if settings.client_nonces_used.include?(parsed_header[:cnonce])
+
+  server_nonce_generated = settings.server_nonces_generated.include?(parsed_header[:nonce])
+  server_nonce_available = not(settings.server_nonces_used.include?(parsed_header[:nonce]))
+  client_nonce_available = not(settings.client_nonces_used.include?(parsed_header[:cnonce]))
 
   settings.server_nonces_used.add(parsed_header[:nonce])
   settings.client_nonces_used.add(parsed_header[:cnonce])
+  return respond_401 unless server_nonce_generated and server_nonce_available and client_nonce_available
 
   return respond_401 unless secure_compare(parsed_header[:username], settings.correct_username)
   hmac_data_hash = Digest::SHA256.hexdigest(
