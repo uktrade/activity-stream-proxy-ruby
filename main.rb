@@ -69,9 +69,9 @@ get '/' do
   return respond_401 unless request.env.key?('HTTP_X_FORWARDED_FOR')
   remote_ips = request.env['HTTP_X_FORWARDED_FOR'].split(',')
   return respond_401 unless remote_ips.length >= 2 && settings.authorized_ip_addresses.include?(remote_ips[-2].strip)
-  return respond_401 unless request.env.key?('HTTP_AUTHORIZATION')
 
   # Header structure check
+  return respond_401 unless request.env.key?('HTTP_AUTHORIZATION')
   authorization_header = request.env['HTTP_AUTHORIZATION']
   parsed_header_array = authorization_header.scan(/([a-z]+)="([^"]+)"/)
   parsed_header = parsed_header_array.each_with_object({}) do |key_val, memo|
