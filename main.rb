@@ -82,11 +82,11 @@ get '/' do
   return respond_401 unless parsed_header.key? :cnonce
   return respond_401 unless parsed_header.key? :username
   return respond_401 unless parsed_header.key? :response
-  return respond_401 unless secure_compare(parsed_header[:username], settings.correct_username)
   return respond_401 unless settings.server_nonces_generated.include?(parsed_header[:nonce])
   return respond_401 if settings.server_nonces_used.include?(parsed_header[:nonce]) 
-  return respond_401 if settings.client_nonces_used.include?(parsed_header[:cnonce]) 
+  return respond_401 if settings.client_nonces_used.include?(parsed_header[:cnonce])
 
+  return respond_401 unless secure_compare(parsed_header[:username], settings.correct_username)
   hmac_data_hash = Digest::SHA256.hexdigest(
       "#{request.request_method}:#{request.fullpath}")
   hmac_secret_hash = Digest::SHA256.hexdigest(
