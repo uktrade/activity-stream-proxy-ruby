@@ -29,10 +29,12 @@ class ExpiringSet
   end
 end
 
-nonce_expire = 15
-$server_nonces_generated = ExpiringSet.new(nonce_expire)
-$server_nonces_used = ExpiringSet.new(nonce_expire)
-$client_nonces_used = ExpiringSet.new(nonce_expire)
+generated_nonce_expire = 15
+$server_nonces_generated = ExpiringSet.new(generated_nonce_expire)
+
+client_nonce_expire = 60
+$server_nonces_used = ExpiringSet.new(client_nonce_expire)
+$client_nonces_used = ExpiringSet.new(client_nonce_expire)
 $correct_realm = 'activity-stream-proxy-ruby'
 $correct_qop = 'auth'
 
