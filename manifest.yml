@@ -1,0 +1,4 @@
+---
+applications:
+- name: activity-stream-proxy-ruby-dev
+  buildpack: ruby_buildpack
